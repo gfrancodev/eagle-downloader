@@ -189,4 +189,3 @@ For any inquiries or support, please open an [issue](https://github.com/gfrancod
 ---
 
 ![GitHub followers](https://img.shields.io/github/followers/gfrancodev?label=Follow&style=social) ![GitHub stars](https://img.shields.io/github/stars/gfrancodev/eagle-downloader?style=social)
-```
