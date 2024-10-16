@@ -10,13 +10,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-test:
-    name: Build and Test
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: ['3.11.10']
+  build-ubuntu:
+    name: Build on Ubuntu
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -24,74 +20,92 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: '3.11.10'
 
       - name: Install dependencies
         run: |
-          make install
+          python -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip setuptools wheel
+          pip install -r requirements.txt
 
-      - name: Run lint
-        run: make lint
-
-      - name: Run formatter
-        run: make format
-
-      - name: Run tests with coverage
-        run: make test-coverage
-
-      - name: Display coverage percentage
+      - name: Build executable with PyInstaller
         run: |
-          echo "Test coverage:"
-          cat coverage.txt
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          files: coverage.xml
-          flags: unittests
-          name: codecov-umbrella
-          fail_ci_if_error: true
-          token: ${{ secrets.CODECOV_TOKEN }}
-
-      - name: Extract version from tag
-        id: get_version
-        run: |
-          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
-            VERSION=${GITHUB_REF#refs/tags/}
-            echo "VERSION=${VERSION}" >> $GITHUB_ENV
-          else
-            echo "VERSION=dev" >> $GITHUB_ENV
-          fi
-
-      - name: Build executable
-        run: |
-          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
-            make build
-          else
-            echo "Skipping build as this is not a tagged commit."
-          fi
+          source venv/bin/activate
+          pyinstaller --onefile --name eagle main.py
 
       - name: Upload binary artifact
         if: startsWith(github.ref, 'refs/tags/') && success()
         uses: actions/upload-artifact@v3
         with:
-          name: eagle-${{ matrix.os }}-v${{ env.VERSION }}
+          name: eagle-ubuntu-latest-v${{ env.VERSION }}
           path: dist/*
 
-      - name: Build and Upload to PyPI
-        if: startsWith(github.ref, 'refs/tags/') && success()
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+  build-windows:
+    name: Build on Windows
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11.10'
+
+      - name: Install dependencies
         run: |
-          make build
-          python -m pip install --upgrade pip setuptools wheel twine
-          python setup.py sdist bdist_wheel
-          twine upload dist/*
-        
+          python -m venv venv
+          venv\Scripts\activate
+          pip install --upgrade pip setuptools wheel
+          pip install -r requirements.txt
+
+      - name: Build executable with PyInstaller
+        run: |
+          venv\Scripts\activate
+          pyinstaller --onefile --name eagle main.py
+
+      - name: Upload binary artifact
+        if: startsWith(github.ref, 'refs/tags/') && success()
+        uses: actions/upload-artifact@v3
+        with:
+          name: eagle-windows-latest-v${{ env.VERSION }}
+          path: dist/*
+
+  build-macos:
+    name: Build on macOS
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11.10'
+
+      - name: Install dependencies
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip setuptools wheel
+          pip install -r requirements.txt
+
+      - name: Build executable with PyInstaller
+        run: |
+          source venv/bin/activate
+          pyinstaller --onefile --name eagle main.py
+
+      - name: Upload binary artifact
+        if: startsWith(github.ref, 'refs/tags/') && success()
+        uses: actions/upload-artifact@v3
+        with:
+          name: eagle-macos-latest-v${{ env.VERSION }}
+          path: dist/*
+
   release:
     name: Create Release
-    needs: build-and-test
+    needs: [build-ubuntu, build-windows, build-macos]
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')  
     steps:
