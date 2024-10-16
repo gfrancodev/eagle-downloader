@@ -168,50 +168,31 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Extract version from tag
-        id: get_version
-        run: |
-          VERSION=${GITHUB_REF#refs/tags/}
-          echo "VERSION=${VERSION}" >> $GITHUB_ENV
-
       - name: Download artifacts
         uses: actions/download-artifact@v3
         with:
-          name: eagle-ubuntu-latest-v${{ env.VERSION }}
+          name: eagle-ubuntu-latest-v${{ github.ref_name }}
           path: dist/eagle
 
       - name: Download artifacts for Windows
         uses: actions/download-artifact@v3
         with:
-          name: eagle-windows-latest-v${{ env.VERSION }}
+          name: eagle-windows-latest-v${{ github.ref_name }}
           path: dist/eagle.exe
 
       - name: Download artifacts for macOS
         uses: actions/download-artifact@v3
         with:
-          name: eagle-macos-latest-v${{ env.VERSION }}
+          name: eagle-macos-latest-v${{ github.ref_name }}
           path: dist/eagle
 
-      - name: Create Release and Upload Assets
+      - name: Update Release and Upload New Assets
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
           files: |
-            dist/eagle-ubuntu-latest-v${{ env.VERSION }}
-            dist/eagle-windows-latest-v${{ env.VERSION }}.exe
-            dist/eagle-macos-latest-v${{ env.VERSION }}
+            dist/eagle-ubuntu-latest-v${{ github.ref_name }}
+            dist/eagle-windows-latest-v${{ github.ref_name }}.exe
+            dist/eagle-macos-latest-v${{ github.ref_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Update Coverage Badge in README
-        run: |
-          # Atualiza o badge de cobertura no README
-          curl -o coverage-badge.svg https://codecov.io/gh/${{ github.repository }}/branch/main/graph/badge.svg
-          sed -i '/^!\[Coverage\](.*)$/d' README.md
-          echo "![Coverage](https://codecov.io/gh/${{ github.repository }}/branch/main/graph/badge.svg)" >> README.md
-          git config --global user.name 'github-actions'
-          git config --global user.email 'github-actions@github.com'
-          git add README.md
-          git commit -m "chore: update coverage badge in README"
-          git push origin main
