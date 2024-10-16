@@ -1,4 +1,8 @@
-# Eagle Downloader ![GitHub Actions](https://img.shields.io/github/workflow/status/gfrancodev/eagle-downloader/CI?label=CI&logo=github) ![Coverage](https://img.shields.io/codecov/c/github/gfrancodev/eagle-downloader?logo=codecov) ![License](https://img.shields.io/github/license/gfrancodev/eagle-downloader?color=blue&logo=github) ![GitHub Release](https://img.shields.io/github/v/release/gfrancodev/eagle-downloader?label=latest%20release&logo=github) ![GitHub issues](https://img.shields.io/github/issues/gfrancodev/eagle-downloader) ![GitHub pull requests](https://img.shields.io/github/issues-pr/gfrancodev/eagle-downloader) ![GitHub last commit](https://img.shields.io/github/last-commit/gfrancodev/eagle-downloader) ![Top Language](https://img.shields.io/github/languages/top/gfrancodev/eagle-downloader) ![Repo Size](https://img.shields.io/github/repo-size/gfrancodev/eagle-downloader)
+<div align="center">
+   <h1>Eagle Downloader </h1>
+</div>
+
+![Coverage](https://img.shields.io/codecov/c/github/gfrancodev/eagle-downloader?logo=codecov) ![License](https://img.shields.io/github/license/gfrancodev/eagle-downloader?color=blue&logo=github) ![GitHub Release](https://img.shields.io/github/v/release/gfrancodev/eagle-downloader?label=latest%20release&logo=github) ![GitHub issues](https://img.shields.io/github/issues/gfrancodev/eagle-downloader) ![GitHub pull requests](https://img.shields.io/github/issues-pr/gfrancodev/eagle-downloader) ![GitHub last commit](https://img.shields.io/github/last-commit/gfrancodev/eagle-downloader) ![Top Language](https://img.shields.io/github/languages/top/gfrancodev/eagle-downloader) ![Repo Size](https://img.shields.io/github/repo-size/gfrancodev/eagle-downloader)
 
 ## 📦 Overview
 
