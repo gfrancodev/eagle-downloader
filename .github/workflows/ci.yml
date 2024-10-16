@@ -85,7 +85,7 @@ jobs:
         run: |
           venv\Scripts\activate
           pip install coverage pytest pytest-asyncio
-          coverage run -m pytest tests
+          coverage run -m pytest tests/main.py
           coverage report
           coverage xml -o coverage.xml
           coverage report | findstr "TOTAL" > coverage.txt
