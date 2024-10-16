@@ -30,6 +30,24 @@ jobs:
           pip install --upgrade pip setuptools wheel
           pip install -r requirements.txt
 
+      - name: Run tests with coverage
+        run: |
+          source venv/bin/activate
+          pip install coverage pytest
+          coverage run -m pytest
+          coverage report
+          coverage xml -o coverage.xml
+          coverage report | grep "TOTAL" | awk '{print $$4}' > coverage.txt
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+
       - name: Build executable with PyInstaller
         run: |
           source venv/bin/activate
@@ -63,6 +81,24 @@ jobs:
           pip install --upgrade pip setuptools wheel
           pip install -r requirements.txt
 
+      - name: Run tests with coverage
+        run: |
+          venv\Scripts\activate
+          pip install coverage pytest
+          coverage run -m pytest
+          coverage report
+          coverage xml -o coverage.xml
+          coverage report | findstr "TOTAL" > coverage.txt
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+
       - name: Build executable with PyInstaller
         run: |
           venv\Scripts\activate
@@ -95,6 +131,24 @@ jobs:
           source venv/bin/activate
           pip install --upgrade pip setuptools wheel
           pip install -r requirements.txt
+
+      - name: Run tests with coverage
+        run: |
+          source venv/bin/activate
+          pip install coverage pytest
+          coverage run -m pytest
+          coverage report
+          coverage xml -o coverage.xml
+          coverage report | grep "TOTAL" | awk '{print $$4}' > coverage.txt
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Build executable with PyInstaller
         run: |
@@ -139,3 +193,15 @@ jobs:
             artifacts/eagle-macos-latest-v${{ env.VERSION }}/eagle
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update Coverage Badge in README
+        run: |
+          # Atualiza o badge de cobertura no README
+          curl -o coverage-badge.svg https://codecov.io/gh/${{ github.repository }}/branch/main/graph/badge.svg
+          sed -i '/^!\[Coverage\](.*)$/d' README.md
+          echo "![Coverage](https://codecov.io/gh/${{ github.repository }}/branch/main/graph/badge.svg)" >> README.md
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+          git add README.md
+          git commit -m "chore: update coverage badge in README"
+          git push origin main
