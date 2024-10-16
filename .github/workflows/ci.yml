@@ -15,7 +15,7 @@ permissions:
 
 jobs:
   build:
-    name: Build on multiple OS
+    name: Build and Release on multiple OS
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -24,17 +24,14 @@ jobs:
           - os: ubuntu-latest
             extension: ''
             python-version: '3.11.9'
-            activate-command: 'source venv/bin/activate'
           - os: windows-latest
             extension: '.exe'
             python-version: '3.11.9'
             architecture: 'x64'
-            activate-command: '.\\venv\\Scripts\\activate'
           - os: macos-latest
             extension: ''
             python-version: '3.11.9'
             architecture: 'x64'
-            activate-command: 'source venv/bin/activate'
 
     steps:
       - name: Checkout code
@@ -50,13 +47,13 @@ jobs:
       - name: Install dependencies
         run: |
           python -m venv venv
-          ${{ matrix.activate-command }}
+          source venv/bin/activate || .\venv\Scripts\activate
           pip install --upgrade pip setuptools wheel
           pip install -r requirements.txt
 
       - name: Run tests with coverage
         run: |
-          ${{ matrix.activate-command }}
+          source venv/bin/activate || .\venv\Scripts\activate
           pip install coverage pytest pytest-asyncio
           coverage run -m pytest tests/*
           coverage report
@@ -75,56 +72,24 @@ jobs:
       - name: Build executable with PyInstaller
         if: startsWith(github.ref, 'refs/tags/')
         run: |
-          ${{ matrix.activate-command }}
+          source venv/bin/activate || .\venv\Scripts\activate
           pyinstaller --onefile --distpath dist/${{ matrix.os }} --name eagle${{ matrix.extension }} main.py
 
       - name: Upload binary artifact
         if: startsWith(github.ref, 'refs/tags/')
         uses: actions/upload-artifact@v4
         with:
-          name: eagle-${{ matrix.os }}-latest${{ github.ref_name != 'main' && '-v' + github.ref_name || '' }}
+          name: eagle-${{ matrix.os }}-latest${{ github.ref_name != 'main' && format('-v{0}', github.ref_name) || '' }}
           path: dist/${{ matrix.os }}/eagle${{ matrix.extension }}
 
-  release:
-    name: Create Release
-    needs: build
-    runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/')
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Extract version from tag
-        id: get_version
-        run: |
-          VERSION=${GITHUB_REF#refs/tags/}
-          echo "VERSION=${VERSION}" >> $GITHUB_ENV
-
-      - name: Download Ubuntu artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: eagle-ubuntu-latest${{ github.ref_name != 'main' && '-v' + github.ref_name || '' }}
-          path: dist/ubuntu/
-
-      - name: Download Windows artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: eagle-windows-latest${{ github.ref_name != 'main' && '-v' + github.ref_name || '' }}
-          path: dist/windows/
-
-      - name: Download macOS artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: eagle-macos-latest${{ github.ref_name != 'main' && '-v' + github.ref_name || '' }}
-          path: dist/macos/
-
-      - name: Update Release and Upload New Assets
+      - name: Create GitHub Release and Upload New Assets
+        if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.ref }}
           files: |
-            dist/ubuntu/eagle-ubuntu-latest${{ github.ref_name != 'main' && '-v' + github.ref_name || '' }}
-            dist/windows/eagle-windows-latest${{ github.ref_name != 'main' && '-v' + github.ref_name || '' }}.exe
-            dist/macos/eagle-macos-latest${{ github.ref_name != 'main' && '-v' + github.ref_name || '' }}
+            dist/ubuntu/eagle-ubuntu-latest${{ github.ref_name != 'main' && format('-v{0}', github.ref_name) || '' }}
+            dist/windows/eagle-windows-latest${{ github.ref_name != 'main' && format('-v{0}', github.ref_name) || '' }}.exe
+            dist/macos/eagle-macos-latest${{ github.ref_name != 'main' && format('-v{0}', github.ref_name) || '' }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
