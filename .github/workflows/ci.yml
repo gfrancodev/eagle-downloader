@@ -174,49 +174,18 @@ jobs:
           VERSION=${GITHUB_REF#refs/tags/}
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
 
-      - name: Ensure Ubuntu directory exists
-        run: |
-          mkdir -p dist/ubuntu
-
-      - name: Download artifacts for Ubuntu
-        uses: dawidd6/action-download-artifact@v2
+      - name: Download all artifacts
+        uses: actions/download-artifact@v3
         with:
-          workflow: build-ubuntu
-          name: eagle-ubuntu-latest-v${{ github.ref_name }}
-          path: dist/ubuntu 
-          search_artifacts: true
-
-      - name: Ensure Windows directory exists
-        run: |
-          mkdir -p dist/windows
-
-      - name: Download artifacts for Windows
-        uses: dawidd6/action-download-artifact@v2
-        with:
-          workflow: build-windows 
-          name: eagle-windows-latest-v${{ github.ref_name }}  
-          path: dist/windows
-          search_artifacts: true
-
-      - name: Ensure macOS directory exists
-        run: |
-          mkdir -p dist/macos
-
-      - name: Download artifacts for macOS
-        uses: dawidd6/action-download-artifact@v2
-        with:
-          workflow: build-macos 
-          name: eagle-macos-latest-v${{ github.ref_name }} 
-          path: dist/macos
-          search_artifacts: true
+          path: dist/
 
       - name: Update Release and Upload New Assets
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.ref }}
           files: |
-            dist/ubuntu/eagle  # Certifique-se de que o arquivo está sendo referenciado corretamente
-            dist/windows/eagle.exe  # Certifique-se de que o arquivo está sendo referenciado corretamente
-            dist/macos/eagle  # Certifique-se de que o arquivo está sendo referenciado corretamente
+            dist/eagle-ubuntu-latest-v${{ github.ref_name }}
+            dist/eagle-windows-latest-v${{ github.ref_name }}.exe
+            dist/eagle-macos-latest-v${{ github.ref_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
