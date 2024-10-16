@@ -57,7 +57,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: eagle-ubuntu-latest-v${{ github.ref_name }}
-          path: dist/eagle
+          path: dist/eagle 
 
   build-windows:
     name: Build on Windows
@@ -107,7 +107,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: eagle-windows-latest-v${{ github.ref_name }}
-          path: dist/eagle.exe
+          path: dist/eagle.exe 
 
   build-macos:
     name: Build on macOS
@@ -157,42 +157,66 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: eagle-macos-latest-v${{ github.ref_name }}
-          path: dist/eagle
+          path: dist/eagle 
 
   release:
     name: Create Release
     needs: [build-ubuntu, build-windows, build-macos]
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/')  
+    if: startsWith(github.ref, 'refs/tags/')
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Download artifacts
-        uses: actions/download-artifact@v3
+      - name: Extract version from tag
+        id: get_version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+
+      - name: Ensure Ubuntu directory exists
+        run: |
+          mkdir -p dist/ubuntu
+
+      - name: Download artifacts for Ubuntu
+        uses: dawidd6/action-download-artifact@v2
         with:
+          workflow: build-ubuntu
           name: eagle-ubuntu-latest-v${{ github.ref_name }}
-          path: dist/eagle
+          path: dist/ubuntu 
+          search_artifacts: true
+
+      - name: Ensure Windows directory exists
+        run: |
+          mkdir -p dist/windows
 
       - name: Download artifacts for Windows
-        uses: actions/download-artifact@v3
+        uses: dawidd6/action-download-artifact@v2
         with:
-          name: eagle-windows-latest-v${{ github.ref_name }}
-          path: dist/eagle.exe
+          workflow: build-windows 
+          name: eagle-windows-latest-v${{ github.ref_name }}  
+          path: dist/windows
+          search_artifacts: true
+
+      - name: Ensure macOS directory exists
+        run: |
+          mkdir -p dist/macos
 
       - name: Download artifacts for macOS
-        uses: actions/download-artifact@v3
+        uses: dawidd6/action-download-artifact@v2
         with:
-          name: eagle-macos-latest-v${{ github.ref_name }}
-          path: dist/eagle
+          workflow: build-macos 
+          name: eagle-macos-latest-v${{ github.ref_name }} 
+          path: dist/macos
+          search_artifacts: true
 
       - name: Update Release and Upload New Assets
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.ref }}
           files: |
-            dist/eagle-ubuntu-latest-v${{ github.ref_name }}
-            dist/eagle-windows-latest-v${{ github.ref_name }}.exe
-            dist/eagle-macos-latest-v${{ github.ref_name }}
+            dist/ubuntu/eagle  # Certifique-se de que o arquivo está sendo referenciado corretamente
+            dist/windows/eagle.exe  # Certifique-se de que o arquivo está sendo referenciado corretamente
+            dist/macos/eagle  # Certifique-se de que o arquivo está sendo referenciado corretamente
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
