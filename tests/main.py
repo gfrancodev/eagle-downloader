@@ -3,7 +3,7 @@ import re
 import pytest
 import asyncio
 from unittest.mock import AsyncMock, MagicMock, Mock
-from eagle.main import (
+from main import (
     create_output_directory,
     sanitize_filename,
     get_download_type,
