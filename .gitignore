@@ -35,6 +35,7 @@ coverage_html/
 .cache
 nosetests.xml
 coverage.xml
+coverage.txt
 *.cover
 *.py,cover
 
