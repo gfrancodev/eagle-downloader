@@ -473,4 +473,8 @@ async def main_async(shutdown_event):
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception:
+        print(Fore.RED + "\nInterrupted.")
+        
