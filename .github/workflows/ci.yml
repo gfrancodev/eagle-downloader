@@ -58,7 +58,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: eagle-ubuntu-latest-v${{ env.VERSION }}
-          path: dist/*
+          path: dist/eagle
 
   build-windows:
     name: Build on Windows
@@ -109,7 +109,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: eagle-windows-latest-v${{ env.VERSION }}
-          path: dist/*
+          path: dist/eagle.exe
 
   build-macos:
     name: Build on macOS
@@ -160,7 +160,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: eagle-macos-latest-v${{ env.VERSION }}
-          path: dist/*
+          path: dist/eagle
 
   release:
     name: Create Release
