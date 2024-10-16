@@ -1,5 +1,5 @@
 <div align="center">
-   <h1>Eagle Downloader </h1>
+   <h1>🦅 Eagle Downloader </h1>
 </div>
 
 ![Coverage](https://img.shields.io/codecov/c/github/gfrancodev/eagle-downloader?logo=codecov) ![License](https://img.shields.io/github/license/gfrancodev/eagle-downloader?color=blue&logo=github) ![GitHub Release](https://img.shields.io/github/v/release/gfrancodev/eagle-downloader?label=latest%20release&logo=github) ![GitHub issues](https://img.shields.io/github/issues/gfrancodev/eagle-downloader) ![GitHub pull requests](https://img.shields.io/github/issues-pr/gfrancodev/eagle-downloader) ![GitHub last commit](https://img.shields.io/github/last-commit/gfrancodev/eagle-downloader) ![Top Language](https://img.shields.io/github/languages/top/gfrancodev/eagle-downloader) ![Repo Size](https://img.shields.io/github/repo-size/gfrancodev/eagle-downloader)
@@ -16,80 +16,116 @@
 - **Interactive Prompts**: User-friendly prompts guide you through the download process, making it accessible for all users.
 - **Progress Indicators**: Real-time progress bars to monitor download status and estimated completion time.
 - **Customizable Output**: Specify download locations, file names, and formats to suit your preferences.
-- **Batch Downloads**: Download multiple videos at once by providing a list of URLs.
 - **Comprehensive Logging**: Detailed logs for troubleshooting and tracking download activities.
 - **Automated Testing & CI/CD**: Ensures high-quality builds and reliable releases across different operating systems.
 - **Cross-Platform Support**: Available for Windows, Linux, and macOS, ensuring accessibility for all users.
 
-## 🛠 Installation
+You're absolutely right! If **Eagle Downloader** is packaged as a standalone binary using tools like **PyInstaller** with the `--onefile` option, it **should not require Python 3.11** (or any Python version) to be installed on the user's system. The binary includes all necessary dependencies, making it fully executable without needing a separate Python installation.
 
-### 🔹 Download Pre-built Binaries
+Let's update the installation guide accordingly to reflect that Python is **not required** for running the binaries. This will streamline the installation process and eliminate unnecessary prerequisites for your users.
 
-Eagle Downloader provides pre-built binaries for **Windows**, **Linux**, and **macOS**. You can download the latest release from the [Releases Page](https://github.com/gfrancodev/eagle-downloader/releases).
+---
 
-1. **Windows**: `eagle.exe`
-2. **Linux**: `eagle`
-3. **macOS**: `eagle`
+## 🛠 Installation Guide
 
-#### 🖥️ Running on Linux/macOS
+Welcome to the **Eagle Downloader** installation guide! Follow the steps below to install the binary on your preferred operating system.
 
-1. **Make the file executable**:
+### 📦 Downloading the Binary
+
+Before proceeding with the installation, download the appropriate binary for your operating system from the [**Releases**](https://github.com/gfrancodev/eagle-downloader/releases) page.
+
+---
+
+### 💻 Linux
+
+#### 🔹 **Installation Steps**
+
+1. **Download the Binary**
+
+   Visit the [**Releases**](https://github.com/gfrancodev/eagle-downloader/releases) page and download the latest Linux binary (`eagle-linux`).
+
+   Alternatively, use `wget` to download directly (replace `v1.0.0` with the latest version):
    ```bash
-   chmod +x eagle
+   wget https://github.com/gfrancodev/eagle-downloader/releases/download/v1.0.0/eagle-linux
    ```
-2. **Move to a directory in your PATH** (optional):
+
+2. **Make the Binary Executable**
    ```bash
-   sudo mv eagle /usr/local/bin/
+   chmod +x eagle-linux
    ```
-3. **Run the application**:
+
+3. **Move the Binary to a Directory in Your PATH**
    ```bash
-   eagle
+   sudo mv eagle-linux /usr/local/bin/eagle
+   ```
+---
+
+### 🪟 Windows
+
+#### 🔹 **Installation Steps**
+
+1. **Download the Binary**
+
+   Visit the [**Releases**](https://github.com/gfrancodev/eagle-downloader/releases) page and download the latest Windows binary (`eagle-windows.exe`).
+
+   Alternatively, use PowerShell to download directly (replace `v1.0.0` with the latest version):
+   ```powershell
+   Invoke-WebRequest -Uri https://github.com/gfrancodev/eagle-downloader/releases/download/v1.0.0/eagle-windows.exe -OutFile eagle.exe
    ```
 
-#### 🪟 Running on Windows
+2. **Move the Binary to a Directory in Your PATH**
 
-1. **Move the executable to a directory in your PATH** or add its location to the PATH environment variable.
-2. **Run the application**:
-   ```cmd
-   eagle.exe
-   ```
+   - **Create a Directory for Executables** (if it doesn't exist):
+     ```powershell
+     mkdir "C:\Program Files\EagleDownloader"
+     ```
+   - **Move the `eagle.exe` to the Directory**:
+     ```powershell
+     Move-Item -Path .\eagle.exe -Destination "C:\Program Files\EagleDownloader\eagle.exe"
+     ```
+   - **Add the Directory to Your System PATH**:
+     - **Via GUI**:
+       1. Right-click on **This PC** and select **Properties**.
+       2. Click on **Advanced system settings**.
+       3. Click on **Environment Variables**.
+       4. Under **System variables**, find and select **Path**, then click **Edit**.
+       5. Click **New** and add `C:\Program Files\EagleDownloader`.
+       6. Click **OK** on all dialogs to apply changes.
+     - **Via PowerShell**:
+       ```powershell
+       [Environment]::SetEnvironmentVariable("Path", $env:Path + ";C:\Program Files\EagleDownloader", [EnvironmentVariableTarget]::Machine)
+       ```
 
-### 🔹 Building from Source
+#### 🔹 **Usage Example**
+```powershell
+eagle
+```
+Follow the on-screen prompts to download your desired YouTube videos or playlists.
 
-If you prefer to build **Eagle Downloader** yourself or wish to contribute to the project, follow these steps:
+---
 
-#### 🛠 Prerequisites
+### 🍎 macOS
 
-- **Python 3.11.10**: Ensure you have Python 3.11.10 installed. You can manage Python versions using [pyenv](https://github.com/pyenv/pyenv).
-- **Git**: For cloning the repository.
+#### 🔹 **Installation Steps**
 
-#### 📥 Steps
+1. **Download the Binary**
 
-1. **Clone the Repository**:
+   Visit the [**Releases**](https://github.com/gfrancodev/eagle-downloader/releases) page and download the latest macOS binary (`eagle-macos`).
+
+   Alternatively, use `curl` to download directly (replace `v1.0.0` with the latest version):
    ```bash
-   git clone https://github.com/gfrancodev/eagle-downloader.git
+   curl -L -o eagle-macos https://github.com/gfrancodev/eagle-downloader/releases/download/v1.0.0/eagle-macos
    ```
-2. **Navigate to the Project Directory**:
+
+2. **Make the Binary Executable**
    ```bash
-   cd eagle-downloader
+   chmod +x eagle-macos
    ```
-3. **Create and Activate Virtual Environment**:
+
+3. **Move the Binary to a Directory in Your PATH**
    ```bash
-   make venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   sudo mv eagle-macos /usr/local/bin/eagle
    ```
-4. **Install Dependencies**:
-   ```bash
-   make install
-   ```
-5. **Build the Executable**:
-   ```bash
-   git tag -a v1.0.0 -m "Release version 1.0.0"
-   git push origin v1.0.0
-   make build
-   ```
-6. **Find the Executable**:
-   The built executable will be located in the `dist/` directory, named `eagle` (Linux/macOS) or `eagle.exe` (Windows).
 
 ## 📖 Usage
 
@@ -115,12 +151,32 @@ If you prefer to build **Eagle Downloader** yourself or wish to contribute to th
   eagle
   ```
   Follow the prompts to enter the video URL, select the format, and choose the download location.
+---
 
-- **Batch Download YouTube Videos**:
-  Create a text file (e.g., `urls.txt`) with one YouTube URL per line, then run:
-  ```bash
-  eagle --batch urls.txt
-  ```
+### ❓ **Troubleshooting**
+
+- **Permission Denied Errors**: Ensure you have the necessary permissions to move binaries to system directories. Use `sudo` where appropriate.
+- **Command Not Found**: Make sure the installation directory is added to your system PATH and that the terminal session is restarted or reloaded to recognize the new PATH settings.
+- **Binary Not Executing Properly**: Verify that the binary was downloaded correctly and that it's compatible with your operating system version.
+
+---
+
+### 📚 **Additional Resources**
+
+- **Eagle Downloader Repository**: [GitHub - gfrancodev/eagle-downloader](https://github.com/gfrancodev/eagle-downloader)
+- **GitHub Releases Documentation**: [Creating Releases](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases)
+
+---
+
+Feel free to reach out if you encounter any issues during the installation process. Happy downloading! 🦅😊
+
+---
+
+## 📝 Summary of Changes
+
+- **Removed Python Prerequisites**: Since the binaries are standalone, users no longer need Python 3.11+ installed.
+- **Simplified Installation Steps**: Focused solely on downloading, making executable, moving to PATH, and verifying the installation.
+- **Enhanced Clarity**: Provided clear and concise instructions for each operating system without unnecessary prerequisites.
 
 ## 🧑‍🤝‍🧑 Contributing
 
