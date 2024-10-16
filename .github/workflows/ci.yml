@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     tags:
-      - 'v*.*.*'
+      - '*.*.*'
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -56,7 +56,7 @@ jobs:
       - name: Upload binary artifact
         uses: actions/upload-artifact@v4
         with:
-          name: eagle-ubuntu-latest-v${{ env.VERSION }}
+          name: eagle-ubuntu-latest-v${{ github.ref_name }}
           path: dist/eagle
 
   build-windows:
@@ -106,7 +106,7 @@ jobs:
       - name: Upload binary artifact
         uses: actions/upload-artifact@v4
         with:
-          name: eagle-windows-latest-v${{ env.VERSION }}
+          name: eagle-windows-latest-v${{ github.ref_name }}
           path: dist/eagle.exe
 
   build-macos:
@@ -156,7 +156,7 @@ jobs:
       - name: Upload binary artifact
         uses: actions/upload-artifact@v4
         with:
-          name: eagle-macos-latest-v${{ env.VERSION }}
+          name: eagle-macos-latest-v${{ github.ref_name }}
           path: dist/eagle
 
   release:
