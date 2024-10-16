@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "eagle-downloader"
+version = "0.1.0"
+description = "A CLI tool to download media from YouTube."
+authors = ["Gustavo Franco <contact@gfrancodev.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.14"
+yt-dlp = "2024.10.7"
+questionary = "2.0.1"
+tqdm = "4.66.5"
+colorama = "0.4.6"
+pytest = "8.3.3"
+pytest-asyncio = "0.24.0"
+pytest-mock = "3.14.0"
+coverage = "7.6.3"
+flake8 = "7.1.1"
+black = "24.10.0"
+pyinstaller = "6.10.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
