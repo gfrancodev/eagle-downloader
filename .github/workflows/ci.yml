@@ -9,10 +9,30 @@ on:
     branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: write
+  packages: write
+
 jobs:
-  build-ubuntu:
-    name: Build on Ubuntu
-    runs-on: ubuntu-latest
+  build:
+    name: Build on multiple OS
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            extension: ''
+            python-version: '3.11.9'
+          - os: windows-latest
+            extension: '.exe'
+            python-version: '3.11.9'
+            architecture: 'x64'
+          - os: macos-latest
+            extension: ''
+            python-version: '3.11.9'
+            architecture: 'x64'
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -20,19 +40,20 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11.9'
+          python-version: ${{ matrix.python-version }}
+          architecture: ${{ matrix.architecture || '' }}
           check-latest: true
 
       - name: Install dependencies
         run: |
           python -m venv venv
-          source venv/bin/activate
+          source venv/bin/activate || .\venv\Scripts\activate
           pip install --upgrade pip setuptools wheel
           pip install -r requirements.txt
 
       - name: Run tests with coverage
         run: |
-          source venv/bin/activate
+          source venv/bin/activate || .\venv\Scripts\activate
           pip install coverage pytest pytest-asyncio
           coverage run -m pytest tests/*
           coverage report
@@ -49,119 +70,21 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Build executable with PyInstaller
+        if: startsWith(github.ref, 'refs/tags/')
         run: |
-          source venv/bin/activate
-          pyinstaller --onefile --name eagle main.py
+          source venv/bin/activate || .\venv\Scripts\activate
+          pyinstaller --onefile --distpath dist/${{ matrix.os }} --name eagle${{ matrix.extension }} main.py
 
       - name: Upload binary artifact
+        if: startsWith(github.ref, 'refs/tags/')
         uses: actions/upload-artifact@v4
         with:
-          name: eagle-ubuntu-latest-v${{ github.ref_name }}
-          path: dist/eagle 
-
-  build-windows:
-    name: Build on Windows
-    runs-on: windows-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11.9'
-          architecture: 'x64'
-          check-latest: true
-
-      - name: Install dependencies
-        run: |
-          python -m venv venv
-          venv\Scripts\activate
-          pip install --upgrade pip setuptools wheel
-          pip install -r requirements.txt
-
-      - name: Run tests with coverage
-        run: |
-          venv\Scripts\activate
-          pip install coverage pytest pytest-asyncio
-          coverage run -m pytest tests/main.py
-          coverage report
-          coverage xml -o coverage.xml
-          coverage report | findstr "TOTAL" > coverage.txt
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          files: coverage.xml
-          flags: unittests
-          name: codecov-umbrella
-          fail_ci_if_error: true
-          token: ${{ secrets.CODECOV_TOKEN }}
-
-      - name: Build executable with PyInstaller
-        run: |
-          venv\Scripts\activate
-          pyinstaller --onefile --name eagle main.py
-
-      - name: Upload binary artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: eagle-windows-latest-v${{ github.ref_name }}
-          path: dist/eagle.exe 
-
-  build-macos:
-    name: Build on macOS
-    runs-on: macos-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11.9'
-          architecture: 'x64'
-          check-latest: true
-
-      - name: Install dependencies
-        run: |
-          python -m venv venv
-          source venv/bin/activate
-          pip install --upgrade pip setuptools wheel
-          pip install -r requirements.txt
-
-      - name: Run tests with coverage
-        run: |
-          source venv/bin/activate
-          pip install coverage pytest pytest-asyncio
-          coverage run -m pytest tests/*
-          coverage report
-          coverage xml -o coverage.xml
-          coverage report | grep "TOTAL" | awk '{print $$4}' > coverage.txt
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          files: coverage.xml
-          flags: unittests
-          name: codecov-umbrella
-          fail_ci_if_error: true
-          token: ${{ secrets.CODECOV_TOKEN }}
-
-      - name: Build executable with PyInstaller
-        run: |
-          source venv/bin/activate
-          pyinstaller --onefile --name eagle main.py
-
-      - name: Upload binary artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: eagle-macos-latest-v${{ github.ref_name }}
-          path: dist/eagle 
+          name: eagle-${{ matrix.os }}-latest${{ github.ref_name != 'main' && '-v' + github.ref_name || '' }}
+          path: dist/${{ matrix.os }}/eagle${{ matrix.extension }}
 
   release:
     name: Create Release
-    needs: [build-ubuntu, build-windows, build-macos]
+    needs: build
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
     steps:
@@ -174,18 +97,31 @@ jobs:
           VERSION=${GITHUB_REF#refs/tags/}
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
 
-      - name: Download all artifacts
+      - name: Download Ubuntu artifact
         uses: actions/download-artifact@v3
         with:
-          path: dist/
+          name: eagle-ubuntu-latest${{ github.ref_name != 'main' && '-v' + github.ref_name || '' }}
+          path: dist/ubuntu/
+
+      - name: Download Windows artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: eagle-windows-latest${{ github.ref_name != 'main' && '-v' + github.ref_name || '' }}
+          path: dist/windows/
+
+      - name: Download macOS artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: eagle-macos-latest${{ github.ref_name != 'main' && '-v' + github.ref_name || '' }}
+          path: dist/macos/
 
       - name: Update Release and Upload New Assets
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.ref }}
           files: |
-            dist/eagle-ubuntu-latest-v${{ github.ref_name }}
-            dist/eagle-windows-latest-v${{ github.ref_name }}.exe
-            dist/eagle-macos-latest-v${{ github.ref_name }}
+            dist/ubuntu/eagle-ubuntu-latest${{ github.ref_name != 'main' && '-v' + github.ref_name || '' }}
+            dist/windows/eagle-windows-latest${{ github.ref_name != 'main' && '-v' + github.ref_name || '' }}.exe
+            dist/macos/eagle-macos-latest${{ github.ref_name != 'main' && '-v' + github.ref_name || '' }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
