@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="eagle-downloader",
-    version="1.0.1.1",
+    version="1.0.2",
     packages=find_packages(),
     install_requires=[
         "yt-dlp==2023.9.24",
@@ -12,7 +12,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "eagle=eagle_downloader.main:main",
+            "eagle=main:main",
         ],
     },
     author="Gustavo Franco",
