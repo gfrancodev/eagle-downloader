@@ -30,18 +30,6 @@ Welcome to the **Eagle Downloader** installation guide! Follow the steps below t
 
 Before proceeding with the installation, download the appropriate binary for your operating system from the [**Releases**](https://github.com/gfrancodev/eagle-downloader/releases) page.
 
-
-You can install Eagle Downloader either via pip (for Python users) or by downloading the binary for your platform directly from the releases page.
-
----
-### 📦 Installing via pip
-
-If you're familiar with Python, you can install Eagle Downloader using pip:
-```bash
-pip install eagle-downloader
-```
----
-
 ### 💻 Linux
 
 #### 🔹 **Installation Steps**
