@@ -1,9 +1,13 @@
 from setuptools import setup, find_packages
+import os
+
+base_dir = os.path.dirname(__file__)
 
 setup(
     name="eagle-downloader",
-    version="1.0.2",
+    version="1.0.2.1",
     packages=find_packages(),
+    setup_requires="setuptools",
     install_requires=[
         "yt-dlp==2023.9.24",
         "questionary==1.10.0",
@@ -12,7 +16,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "eagle=main:main",
+            "eagle=eagle_downloader.main:main",
         ],
     },
     author="Gustavo Franco",
@@ -26,5 +30,4 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    python_requires=">=3.11.10",
 )
