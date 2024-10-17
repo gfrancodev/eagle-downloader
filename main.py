@@ -1,23 +1,72 @@
 #!/usr/bin/env python3
-
-import os
-import sys
-import asyncio
-import yt_dlp
 import questionary
+from os import makedirs, path
+from sys import stdout
+from asyncio import (
+    CancelledError,
+    Event,
+    Lock,
+    Semaphore,
+    all_tasks,
+    create_task,
+    current_task,
+    gather,
+    get_event_loop,
+    run,
+    sleep,
+)
+from yt_dlp import YoutubeDL
+from itertools import cycle
+from uuid import uuid4
+from argparse import ArgumentParser
 from colorama import init, Fore
 from tqdm import tqdm
 from functools import partial
-import itertools
-import uuid
+
 
 init(autoreset=True)
+
+__version__ = "v1.0.1"
+
+
+def brand():
+    """
+    Prints the brand presentation of the Eagle Downloader, including the version number.
+    The presentation uses colored text with the help of `Fore.LIGHTCYAN_EX`
+    to make it visually appealing.
+    """
+    presentation = (
+        Fore.LIGHTCYAN_EX
+        + f"""
+  +-+-+-+-+-+ +-+-+-+-+-+-+-+-+-+-+
+🦅|E|A|G|L|E| |D|O|W|N|L|O|A|D|E|R| {__version__}
+  +-+-+-+-+-+ +-+-+-+-+-+-+-+-+-+-+\n"""
+    )
+    print(presentation)
+
+
+def parse_arguments():
+    """
+    Parses command-line arguments for the Eagle Downloader.
+    The parser includes a --version argument that, when called,
+    displays the version of the program.
+    """
+    parser = ArgumentParser(
+        description="Eagle Downloader: Download YouTube videos and playlists efficiently."
+    )
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"Eagle Downloader {__version__}",
+        help="Show the program's version number and exit.",
+    )
+    return parser.parse_args()
 
 
 def create_output_directory(directory_name="downloads"):
     """Creates the output directory if it doesn't exist."""
-    output_path = os.path.abspath(directory_name)
-    os.makedirs(output_path, exist_ok=True)
+    output_path = path.abspath(directory_name)
+    makedirs(output_path, exist_ok=True)
     return output_path
 
 
@@ -108,6 +157,7 @@ async def get_max_concurrent():
 
 async def get_url():
     """Asks the user to enter the video or playlist URL."""
+    brand()
     url = await questionary.text("Enter video or playlist URL:").ask_async()
     return url.strip()
 
@@ -121,7 +171,7 @@ async def get_cookies_file():
         cookies_file = await questionary.text(
             "Enter the path to your cookies.txt file:"
         ).ask_async()
-        if os.path.isfile(cookies_file):
+        if path.isfile(cookies_file):
             return cookies_file
         else:
             print(Fore.YELLOW + "Cookies file not found. Proceeding without cookies.")
@@ -210,7 +260,7 @@ async def download_entry(entry, ydl_opts, lock):
         print(Fore.YELLOW + "Invalid entry detected. Skipping.")
         return
     sanitized_title = sanitize_filename(entry["title"])
-    unique_id = entry.get("id", str(uuid.uuid4()))
+    unique_id = entry.get("id", str(uuid4()))
     output_template = update_output_template(sanitized_title, unique_id)
     ydl_opts["outtmpl"] = output_template
     progress = create_progress_bar(sanitized_title)
@@ -264,15 +314,15 @@ def complete_progress_bar(progress):
 
 
 async def perform_download(url, ydl_opts, progress, lock):
-    loop = asyncio.get_event_loop()
+    loop = get_event_loop()
     try:
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        with YoutubeDL(ydl_opts) as ydl:
             func = partial(ydl.extract_info, url, download=True)
             async with lock:
                 info = await loop.run_in_executor(None, func)
             output_file = ydl.prepare_filename(info)
             print(Fore.GREEN + f"\nCompleted: {output_file}")
-    except asyncio.CancelledError:
+    except CancelledError:
         print(Fore.YELLOW + f"Download cancelled: {ydl_opts['outtmpl']}")
     except Exception as e:
         print(Fore.RED + f"Error downloading: {e}")
@@ -285,19 +335,19 @@ async def process_entries(entries, ydl_opts, max_concurrent, shutdown_event):
     if not entries:
         print(Fore.YELLOW + "No entries found to download.")
         return
-    lock = asyncio.Lock()
+    lock = Lock()
     tasks = create_download_tasks(
         entries, ydl_opts, max_concurrent, shutdown_event, lock
     )
-    await asyncio.gather(*tasks, return_exceptions=True)
+    await gather(*tasks, return_exceptions=True)
 
 
 def create_download_tasks(entries, ydl_opts, max_concurrent, shutdown_event, lock):
     """Creates asynchronous tasks for downloading entries."""
-    semaphore = asyncio.Semaphore(max_concurrent)
+    semaphore = Semaphore(max_concurrent)
     tasks = []
     for entry in entries:
-        task = asyncio.create_task(
+        task = create_task(
             download_with_semaphore(entry, ydl_opts, semaphore, shutdown_event, lock)
         )
         tasks.append(task)
@@ -379,29 +429,27 @@ async def perform_downloads(
     if is_playlist:
         await handle_playlist(info, ydl_opts, max_concurrent, shutdown_event)
     else:
-        await download_entry(info, ydl_opts, asyncio.Lock())
+        await download_entry(info, ydl_opts, Lock())
 
 
 async def show_spinner(message, stop_event):
     """Displays a spinner while processing."""
-    spinner = itertools.cycle(["-", "\\", "|", "/"])
+    spinner = cycle(["-", "\\", "|", "/"])
     while not stop_event.is_set():
-        sys.stdout.write(next(spinner) + " " + message + "    \r")
-        sys.stdout.flush()
-        await asyncio.sleep(0.1)
-    sys.stdout.write(" " * (len(message) + 4) + "\r")
-    sys.stdout.flush()
+        stdout.write(next(spinner) + " " + message + "    \r")
+        stdout.flush()
+        await sleep(0.1)
+    stdout.write(" " * (len(message) + 4) + "\r")
+    stdout.flush()
 
 
 async def extract_info(url, ydl_opts, shutdown_event):
     """Extracts video or playlist information using yt-dlp."""
-    loop = asyncio.get_event_loop()
-    stop_event = asyncio.Event()
-    spinner_task = asyncio.create_task(
-        show_spinner("Processing your request...", stop_event)
-    )
+    loop = get_event_loop()
+    stop_event = Event()
+    spinner_task = create_task(show_spinner("Processing your request...", stop_event))
     try:
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        with YoutubeDL(ydl_opts) as ydl:
             func = partial(ydl.extract_info, url, download=False)
             info = await loop.run_in_executor(None, func)
         stop_event.set()
@@ -446,18 +494,19 @@ async def download_media(user_input, shutdown_event):
 async def shutdown(loop, signal=None):
     """Handles graceful shutdown of the program."""
     print(Fore.YELLOW + "\nShutting down...")
-    tasks = [t for t in asyncio.all_tasks(loop) if t is not asyncio.current_task()]
+    tasks = [t for t in all_tasks(loop) if t is not current_task()]
     [task.cancel() for task in tasks]
-    await asyncio.gather(*tasks, return_exceptions=True)
+    await gather(*tasks, return_exceptions=True)
     loop.stop()
 
 
 def main():
     """Entry point of the script."""
-    loop = asyncio.get_event_loop()
-    shutdown_event = asyncio.Event()
+    parse_arguments()
+    loop = get_event_loop()
+    shutdown_event = Event()
     try:
-        asyncio.run(main_async(shutdown_event))
+        run(main_async(shutdown_event))
     except KeyboardInterrupt:
         shutdown_event.set()
         loop.run_until_complete(shutdown(loop))
@@ -477,4 +526,3 @@ if __name__ == "__main__":
         main()
     except Exception:
         print(Fore.RED + "\nInterrupted.")
-        
