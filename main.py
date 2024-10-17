@@ -26,7 +26,7 @@ from functools import partial
 
 init(autoreset=True)
 
-__version__ = "v1.0.1.1"
+__version__ = "v1.0.2"
 
 
 def brand():
