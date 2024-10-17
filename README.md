@@ -4,6 +4,10 @@
 
 ![Coverage](https://img.shields.io/codecov/c/github/gfrancodev/eagle-downloader?logo=codecov) ![License](https://img.shields.io/github/license/gfrancodev/eagle-downloader?color=blue&logo=github) ![GitHub Release](https://img.shields.io/github/v/release/gfrancodev/eagle-downloader?label=latest%20release&logo=github) ![GitHub issues](https://img.shields.io/github/issues/gfrancodev/eagle-downloader) ![GitHub pull requests](https://img.shields.io/github/issues-pr/gfrancodev/eagle-downloader) ![GitHub last commit](https://img.shields.io/github/last-commit/gfrancodev/eagle-downloader) ![Top Language](https://img.shields.io/github/languages/top/gfrancodev/eagle-downloader) ![Repo Size](https://img.shields.io/github/repo-size/gfrancodev/eagle-downloader)
 
+<p align="center">
+   <img src="https://i.imgur.com/tD1sFEc.png" />
+</p>
+
 ## 📦 Overview
 
 **Eagle Downloader** is a robust and user-friendly **YouTube Downloader** Command-Line Interface (CLI) tool designed to effortlessly download high-quality videos and audios from YouTube. Whether you're looking to save your favorite YouTube videos, convert them to different formats, or manage your media library, Eagle Downloader provides a seamless and efficient experience with powerful features tailored for both casual users and power users.
@@ -29,6 +33,18 @@ Welcome to the **Eagle Downloader** installation guide! Follow the steps below t
 ### 📦 Downloading the Binary
 
 Before proceeding with the installation, download the appropriate binary for your operating system from the [**Releases**](https://github.com/gfrancodev/eagle-downloader/releases) page.
+
+
+You can install Eagle Downloader either via pip (for Python users) or by downloading the binary for your platform directly from the releases page.
+
+---
+### 📦 Installing via pip
+
+If you're familiar with Python, you can install Eagle Downloader using pip:
+```bash
+pip install eagle-downloader
+```
+---
 
 ### 💻 Linux
 
