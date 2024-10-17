@@ -19,6 +19,7 @@
 - **Comprehensive Logging**: Detailed logs for troubleshooting and tracking download activities.
 - **Automated Testing & CI/CD**: Ensures high-quality builds and reliable releases across different operating systems.
 - **Cross-Platform Support**: Available for Windows, Linux, and macOS, ensuring accessibility for all users.
+
 ---
 
 ## 🛠 Installation Guide
@@ -29,33 +30,6 @@ Welcome to the **Eagle Downloader** installation guide! Follow the steps below t
 
 Before proceeding with the installation, download the appropriate binary for your operating system from the [**Releases**](https://github.com/gfrancodev/eagle-downloader/releases) page.
 
-## Usign Python
-To install **Eagle Downloader** using `pip`, follow these steps:
-
-### Prerequisites
-Make sure you have Python installed on your system.
-
-### Steps to Install:
-
-1. Open a terminal or command prompt.
-2. Run the following command:
-
-```bash
-pip install eagle-downloader
-```
-
-This will install **Eagle Downloader** and all necessary dependencies on your system.
-
-### Running the Tool:
-
-Once installed, you can run **Eagle Downloader** using the following command:
-
-```bash
-eagle
-```
-
-This will start the interactive process where you can specify the video or playlist URL, select quality options, and begin downloading.
-
 ### 💻 Linux
 
 #### 🔹 **Installation Steps**
@@ -64,9 +38,9 @@ This will start the interactive process where you can specify the video or playl
 
    Visit the [**Releases**](https://github.com/gfrancodev/eagle-downloader/releases) page and download the latest Linux binary (`eagle-linux`).
 
-   Alternatively, use `wget` to download directly (replace `v1.0.0` with the latest version):
+   Alternatively, you can use `wget` to download directly:
    ```bash
-   wget https://github.com/gfrancodev/eagle-downloader/releases/download/v1.0.0/eagle-linux
+   wget https://github.com/gfrancodev/eagle-downloader/releases/download/1.0.2.1/eagle-linux-v1.0.2.1-x64.zip
    ```
 
 2. **Make the Binary Executable**
@@ -78,6 +52,12 @@ This will start the interactive process where you can specify the video or playl
    ```bash
    sudo mv eagle-linux /usr/local/bin/eagle
    ```
+
+4. **Run the Eagle Downloader**
+   ```bash
+   eagle
+   ```
+
 ---
 
 ### 🪟 Windows
@@ -88,9 +68,9 @@ This will start the interactive process where you can specify the video or playl
 
    Visit the [**Releases**](https://github.com/gfrancodev/eagle-downloader/releases) page and download the latest Windows binary (`eagle-windows.exe`).
 
-   Alternatively, use PowerShell to download directly (replace `v1.0.0` with the latest version):
+   Alternatively, use PowerShell to download directly:
    ```powershell
-   Invoke-WebRequest -Uri https://github.com/gfrancodev/eagle-downloader/releases/download/v1.0.0/eagle-windows.exe -OutFile eagle.exe
+   Invoke-WebRequest -Uri https://github.com/gfrancodev/eagle-downloader/releases/download/v1.0.2.1/eagle-windows-v1.0.2.1-x64.zip -OutFile eagle.exe
    ```
 
 2. **Move the Binary to a Directory in Your PATH**
@@ -116,11 +96,10 @@ This will start the interactive process where you can specify the video or playl
        [Environment]::SetEnvironmentVariable("Path", $env:Path + ";C:\Program Files\EagleDownloader", [EnvironmentVariableTarget]::Machine)
        ```
 
-#### 🔹 **Usage Example**
-```powershell
-eagle
-```
-Follow the on-screen prompts to download your desired YouTube videos or playlists.
+3. **Run the Eagle Downloader**
+   ```powershell
+   eagle
+   ```
 
 ---
 
@@ -132,37 +111,28 @@ Follow the on-screen prompts to download your desired YouTube videos or playlist
 
    Visit the [**Releases**](https://github.com/gfrancodev/eagle-downloader/releases) page and download the latest macOS binary (`eagle-macos`).
 
-   Alternatively, use `curl` to download directly (replace `v1.0.0` with the latest version):
+   Alternatively, you can use `curl` to download directly:
    ```bash
-   curl -L -o eagle-macos https://github.com/gfrancodev/eagle-downloader/releases/download/v1.0.0/eagle-macos
+   curl -L -o eagle-darwin https://github.com/gfrancodev/eagle-downloader/releases/download/v1.0.2.1/eagle-darwin-v1.0.2.1-x64.zip
    ```
 
 2. **Make the Binary Executable**
    ```bash
-   chmod +x eagle-macos
+   chmod +x eagle-darwin
    ```
 
 3. **Move the Binary to a Directory in Your PATH**
    ```bash
-   sudo mv eagle-macos /usr/local/bin/eagle
+   sudo mv eagle-darwin /usr/local/bin/eagle
    ```
 
-## 📖 Usage
-
-**Eagle Downloader** offers a straightforward interface to download your desired YouTube media. Here's how to get started:
-
-1. **Run the Application**:
+4. **Run the Eagle Downloader**
    ```bash
-   eagle  # On Windows: eagle.exe
+   eagle
    ```
-2. **Follow the Interactive Prompts**:
-   - **Enter the YouTube URL**: Provide the URL of the YouTube video you wish to download.
-   - **Choose Format**: Select the desired format (e.g., MP4 for video, MP3 for audio).
-   - **Specify Download Location**: Choose where to save the downloaded file.
+---
 
-3. **Monitor the Download**:
-   - Real-time progress bars will display the download status.
-   - Upon completion, you'll receive a confirmation message with the file location.
+For more details and the latest updates, visit the [**Eagle Downloader GitHub repository**](https://github.com/gfrancodev/eagle-downloader).
 
 ### 🔍 **Example Commands**
 
