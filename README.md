@@ -34,7 +34,32 @@ Welcome to the **Eagle Downloader** installation guide! Follow the steps below t
 
 Before proceeding with the installation, download the appropriate binary for your operating system from the [**Releases**](https://github.com/gfrancodev/eagle-downloader/releases) page.
 
----
+## Usign Python
+To install **Eagle Downloader** using `pip`, follow these steps:
+
+### Prerequisites
+Make sure you have Python installed on your system.
+
+### Steps to Install:
+
+1. Open a terminal or command prompt.
+2. Run the following command:
+
+```bash
+pip install eagle-downloader
+```
+
+This will install **Eagle Downloader** and all necessary dependencies on your system.
+
+### Running the Tool:
+
+Once installed, you can run **Eagle Downloader** using the following command:
+
+```bash
+eagle
+```
+
+This will start the interactive process where you can specify the video or playlist URL, select quality options, and begin downloading.
 
 ### 💻 Linux
 
