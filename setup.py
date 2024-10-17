@@ -18,6 +18,8 @@ setup(
     author="Gustavo Franco",
     author_email="contact@gfrancodev.com",
     description="A CLI tool to download media from YouTube.",
+    long_description=open("README.md").read(),
+    long_description_content_type="text/markdown",
     url="https://github.com/gfrancodev/eagle-downloader",
     classifiers=[
         "Programming Language :: Python :: 3",
