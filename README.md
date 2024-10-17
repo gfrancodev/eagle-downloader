@@ -19,11 +19,6 @@
 - **Comprehensive Logging**: Detailed logs for troubleshooting and tracking download activities.
 - **Automated Testing & CI/CD**: Ensures high-quality builds and reliable releases across different operating systems.
 - **Cross-Platform Support**: Available for Windows, Linux, and macOS, ensuring accessibility for all users.
-
-You're absolutely right! If **Eagle Downloader** is packaged as a standalone binary using tools like **PyInstaller** with the `--onefile` option, it **should not require Python 3.11** (or any Python version) to be installed on the user's system. The binary includes all necessary dependencies, making it fully executable without needing a separate Python installation.
-
-Let's update the installation guide accordingly to reflect that Python is **not required** for running the binaries. This will streamline the installation process and eliminate unnecessary prerequisites for your users.
-
 ---
 
 ## 🛠 Installation Guide
