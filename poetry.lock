@@ -1104,7 +1104,7 @@ urllib3 = ">=1.26.17,<3"
 websockets = ">=13.0"
 
 [package.extras]
-build = ["build", "hatchling", "pip", "setuptools (>=71.0.2)", "wheel"]
+build = ["build", "hatchling", "pip", "setuptools (>=71.0.2.1)", "wheel"]
 curl-cffi = ["curl-cffi (==0.5.10)", "curl-cffi (>=0.5.10,!=0.6.*,<0.7.2)"]
 dev = ["autopep8 (>=2.0,<3.0)", "pre-commit", "pytest (>=8.1,<9.0)", "pytest-rerunfailures (>=14.0,<15.0)", "ruff (>=0.6.0,<0.7.0)"]
 py2exe = ["py2exe (>=0.12)"]

@@ -5,7 +5,7 @@ from colorama import Fore
 import pytest
 import asyncio
 from unittest.mock import AsyncMock, MagicMock, Mock, patch
-from main import (
+from eagle_downloader.main import (
     create_output_directory,
     sanitize_filename,
     get_download_type,
@@ -261,8 +261,8 @@ async def test_get_cookies_file_not_used(mocker):
 
 @pytest.mark.asyncio
 async def test_get_user_input(mocker):
-    mocker.patch("main.get_url", AsyncMock(return_value="https://example.com"))
-    mocker.patch("main.get_cookies_file", AsyncMock(return_value="cookies.txt"))
+    mocker.patch("eagle_downloader.main.get_url", AsyncMock(return_value="https://example.com"))
+    mocker.patch("eagle_downloader.main.get_cookies_file", AsyncMock(return_value="cookies.txt"))
     result = await get_user_input()
     assert result["url"] == "https://example.com"
     assert result["cookies_file"] == "cookies.txt"
@@ -365,7 +365,7 @@ def test_determine_if_playlist():
 
 @pytest.mark.asyncio
 async def test_get_quality_audio(mocker):
-    mocker.patch("main.get_audio_quality", AsyncMock(return_value="320"))
+    mocker.patch("eagle_downloader.main.get_audio_quality", AsyncMock(return_value="320"))
     qualities = await get_quality("audio")
     assert qualities["audio"] == "320"
     assert qualities["video"] is None
@@ -373,7 +373,7 @@ async def test_get_quality_audio(mocker):
 
 @pytest.mark.asyncio
 async def test_get_quality_video(mocker):
-    mocker.patch("main.get_video_quality", AsyncMock(return_value="1080"))
+    mocker.patch("eagle_downloader.main.get_video_quality", AsyncMock(return_value="1080"))
     qualities = await get_quality("video")
     assert qualities["video"] == "1080"
     assert qualities["audio"] is None
@@ -381,8 +381,8 @@ async def test_get_quality_video(mocker):
 
 @pytest.mark.asyncio
 async def test_get_quality_both(mocker):
-    mocker.patch("main.get_audio_quality", AsyncMock(return_value="256"))
-    mocker.patch("main.get_video_quality", AsyncMock(return_value="720"))
+    mocker.patch("eagle_downloader.main.get_audio_quality", AsyncMock(return_value="256"))
+    mocker.patch("eagle_downloader.main.get_video_quality", AsyncMock(return_value="720"))
     qualities = await get_quality("both")
     assert qualities["audio"] == "256"
     assert qualities["video"] == "720"
@@ -422,7 +422,7 @@ async def test_extract_info_success(mocker):
     mocker.patch("yt_dlp.YoutubeDL", ydl_mock)
 
     # Mock show_spinner to prevent actual spinner
-    mocker.patch("main.show_spinner", return_value=AsyncMock())
+    mocker.patch("eagle_downloader.main.show_spinner", return_value=AsyncMock())
 
     info = await extract_info("http://example.com", {}, asyncio.Event())
     assert info["id"] == "123"
@@ -442,7 +442,7 @@ async def test_extract_info_error(mocker, capsys):
     ydl_mock.return_value.__enter__.return_value = ydl_instance
     mocker.patch("yt_dlp.YoutubeDL", ydl_mock)
 
-    mocker.patch("main.show_spinner", return_value=AsyncMock())
+    mocker.patch("eagle_downloader.main.show_spinner", return_value=AsyncMock())
 
     info = await extract_info("http://example.com", {}, asyncio.Event())
     out, err = capsys.readouterr()
@@ -453,11 +453,11 @@ async def test_extract_info_error(mocker, capsys):
 @pytest.mark.asyncio
 async def test_download_entry_valid(mocker):
     entry = {"webpage_url": "http://example.com", "title": "Test Video", "id": "123"}
-    mocker.patch("main.is_valid_entry", return_value=True)
-    mocker.patch("main.sanitize_filename", return_value="Test_Video")
-    mocker.patch("main.update_output_template", return_value="123_Test_Video.%(ext)s")
-    mocker.patch("main.create_progress_bar", return_value=Mock())
-    mock_perform_download = mocker.patch("main.perform_download", AsyncMock())
+    mocker.patch("eagle_downloader.main.is_valid_entry", return_value=True)
+    mocker.patch("eagle_downloader.main.sanitize_filename", return_value="Test_Video")
+    mocker.patch("eagle_downloader.main.update_output_template", return_value="123_Test_Video.%(ext)s")
+    mocker.patch("eagle_downloader.main.create_progress_bar", return_value=Mock())
+    mock_perform_download = mocker.patch("eagle_downloader.main.perform_download", AsyncMock())
     await download_entry(entry, {}, asyncio.Lock())
     mock_perform_download.assert_awaited_once()
 
@@ -465,7 +465,7 @@ async def test_download_entry_valid(mocker):
 @pytest.mark.asyncio
 async def test_download_entry_invalid(mocker, capfd):
     entry = {"webpage_url": "http://example.com"}
-    mocker.patch("main.is_valid_entry", return_value=False)
+    mocker.patch("eagle_downloader.main.is_valid_entry", return_value=False)
     await download_entry(entry, {}, asyncio.Lock())
     out, err = capfd.readouterr()
     combined_output = out + err
@@ -567,7 +567,7 @@ async def test_create_download_tasks(mocker):
 @pytest.mark.asyncio
 async def test_download_with_semaphore(mocker):
     entry = {"webpage_url": "http://example.com", "title": "Test Video"}
-    mock_download_entry = mocker.patch("main.download_entry", AsyncMock())
+    mock_download_entry = mocker.patch("eagle_downloader.main.download_entry", AsyncMock())
     await download_with_semaphore(
         entry, {}, asyncio.Semaphore(1), asyncio.Event(), asyncio.Lock()
     )
@@ -592,15 +592,15 @@ async def test_handle_playlist_empty(capfd):
 
 @pytest.mark.asyncio
 async def test_handle_playlist_entries(mocker):
-    mock_process_entries = mocker.patch("main.process_entries", AsyncMock())
+    mock_process_entries = mocker.patch("eagle_downloader.main.process_entries", AsyncMock())
     await handle_playlist({"entries": [{"id": "1"}]}, {}, 5, asyncio.Event())
     mock_process_entries.assert_awaited_once()
 
 
 @pytest.mark.asyncio
 async def test_download_media_no_info(mocker):
-    mocker.patch("main.extract_info", AsyncMock(return_value=None))
-    mocker.patch("main.gather_user_options", AsyncMock())
+    mocker.patch("eagle_downloader.main.extract_info", AsyncMock(return_value=None))
+    mocker.patch("eagle_downloader.main.gather_user_options", AsyncMock())
     mock_shutdown_event = asyncio.Event()
     await download_media({"url": "http://example.com"}, mock_shutdown_event)
     # Ensure that no exception is raised

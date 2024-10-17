@@ -33,7 +33,7 @@ jobs:
         run: |
           source venv/bin/activate
           pip install coverage pytest pytest-asyncio
-          coverage run -m pytest tests/*
+          coverage run -m pytest eagle_downloader/tests/*
           coverage report
           coverage xml -o coverage.xml
           coverage report | grep "TOTAL" | awk '{print $$4}' > coverage.txt
@@ -49,7 +49,8 @@ jobs:
       - name: Build executable with PyInstaller
         run: |
           source venv/bin/activate
-          pyinstaller --onefile --name eagle main.py
+          pip install pyinstaller
+          pyinstaller --onefile --name eagle eagle_downloader/main.py
       - name: Upload binary artifact
         uses: actions/upload-artifact@v4
         with:
@@ -80,7 +81,7 @@ jobs:
         run: |
           venv\Scripts\activate
           pip install coverage pytest pytest-asyncio
-          coverage run -m pytest tests/main.py
+          coverage run -m pytest eagle_downloader/tests/main.py
           coverage report
           coverage xml -o coverage.xml
           coverage report | findstr "TOTAL" > coverage.txt
@@ -96,7 +97,8 @@ jobs:
       - name: Build executable with PyInstaller
         run: |
           venv\Scripts\activate
-          pyinstaller --onefile --name eagle main.py
+          pip install pyinstaller
+          pyinstaller --onefile --name eagle eagle_downloader/main.py
       - name: Upload binary artifact
         uses: actions/upload-artifact@v4
         with:
@@ -127,7 +129,7 @@ jobs:
         run: |
           source venv/bin/activate
           pip install coverage pytest pytest-asyncio
-          coverage run -m pytest tests/*
+          coverage run -m pytest eagle_downloader/tests/*
           coverage report
           coverage xml -o coverage.xml
           coverage report | grep "TOTAL" | awk '{print $$4}' > coverage.txt
@@ -143,7 +145,8 @@ jobs:
       - name: Build executable with PyInstaller
         run: |
           source venv/bin/activate
-          pyinstaller --onefile --name eagle main.py
+          pip install pyinstaller
+          pyinstaller --onefile --name eagle eagle_downloader/main.py
       - name: Upload binary artifact
         uses: actions/upload-artifact@v4
         with:

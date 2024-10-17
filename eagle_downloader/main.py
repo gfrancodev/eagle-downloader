@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 import questionary
 from os import makedirs, path
 from sys import stdout
@@ -26,7 +26,7 @@ from functools import partial
 
 init(autoreset=True)
 
-__version__ = "v1.0.1"
+__version__ = "v1.0.2.1"
 
 
 def brand():
@@ -500,8 +500,8 @@ async def shutdown(loop, signal=None):
     loop.stop()
 
 
-def main():
-    """Entry point of the script."""
+def handle():
+    """Handles the main logic flow, including event loop management and shutdown handling."""
     parse_arguments()
     loop = get_event_loop()
     shutdown_event = Event()
@@ -513,16 +513,15 @@ def main():
         print(Fore.RED + "\nDownload interrupted by user.")
     finally:
         loop.close()
-
+        
+def main():
+    """Entry point of the script, handles high-level exception management."""
+    try:
+        handle()
+    except Exception:
+        print(Fore.RED + "\nInterrupted.")
 
 async def main_async(shutdown_event):
     """Asynchronous main function."""
     user_input = await get_user_input()
     await download_media(user_input, shutdown_event)
-
-
-if __name__ == "__main__":
-    try:
-        main()
-    except Exception:
-        print(Fore.RED + "\nInterrupted.")
